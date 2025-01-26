@@ -25,6 +25,24 @@
             <label>Price</label>
             <input type="number" id="price" name="price" class="form-control">
         </div>
+        <div class="mb-3">
+            <label>Availability</label><br>
+            <input type="radio" id="available" name="availability" value="in_stock" checked>
+            <label for="available">In Stock</label>
+            <input type="radio" id="out_of_stock" name="availability" value="out_of_stock">
+            <label for="out_of_stock">Out of Stock</label>
+        </div>
+    
+        <div class="mb-3">
+            <input type="checkbox" id="featured" name="featured">
+            <label for="featured">Mark as Featured</label>
+        </div>
+    
+       
+        <div class="mb-3">
+            <label>Product Image</label>
+            <input type="file" id="image" name="image" class="form-control">
+        </div>
         <button type="submit" class="btn btn-primary">Save Product</button>
     </form>
     
@@ -36,6 +54,8 @@
                 <th>Name</th>
                 <th>Description</th>
                 <th>Price</th>
+                <th>Availability</th>
+                <th>Product Image</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -45,6 +65,16 @@
                     <td>{{ $product->name }}</td>
                     <td>{{ $product->description }}</td>
                     <td>${{ $product->price }}</td>
+                    <td>${{ $product->availability }}</td>
+                    <td>
+                        
+                        @if($product->image)
+                            <img src="{{ asset('storage/' . $product->image) }}" width="100" height="100" alt="Product Image">
+                        @else
+                            No Image
+                        @endif
+                    </td>
+                    
 
                     <td>
                         <button class="btn btn-warning editProduct">Edit</button>
@@ -68,29 +98,40 @@ $(document).ready(function () {
     // Create or Update Product
     $('#productForm').submit(function (e) {
         e.preventDefault();
+        
         let id = $('#product_id').val();
         let url = id ? `/products/${id}` : '/products';
-        let method = id ? 'PUT' : 'POST';
+        let method = id ? 'POST' : 'POST'; 
+       
+        let formData = new FormData(this);
+        formData.append('_method', id ? 'PUT' : 'POST'); 
+        formData.append('_token', $('meta[name="csrf-token"]').attr('content'));
 
         $.ajax({
             url: url,
-            type: method,
-            data: {
-                _token: $('meta[name="csrf-token"]').attr('content'), 
-                 _method: method, 
-                name: $('#name').val(),
-                description: $('#description').val(),
-                price: $('#price').val(),
-                
-            },
+            type: 'POST',
+            data: formData,
+            processData: false, 
+            contentType: false,
             success: function (response) {
+                alert('Product saved successfully!');
                 location.reload();
+            },
+            error: function (xhr) {
+                if (xhr.status === 422) {
+                    let errors = xhr.responseJSON.errors;
+                    let errorMessage = '';
+                    $.each(errors, function (key, value) {
+                        errorMessage += value[0] + "\n";
+                    });
+                    alert("Validation Failed:\n" + errorMessage);
+                }
             }
         });
     });
 
     // Edit Product
-    $('.editProduct').click(function () {
+    $(document).on('click', '.editProduct', function () {
         let id = $(this).closest('tr').data('id');
 
         $.get(`/products/${id}/edit`, function (data) {
@@ -98,23 +139,26 @@ $(document).ready(function () {
             $('#name').val(data.name);
             $('#description').val(data.description);
             $('#price').val(data.price);
-           
+
+            $(`input[name="availability"][value="${data.availability}"]`).prop("checked", true);
+            
+            
+            $('#featured').prop('checked', data.featured == 1);
         });
     });
 
     // Delete Product
-    $('.deleteProduct').click(function () {
+    $(document).on('click', '.deleteProduct', function () {
         let id = $(this).closest('tr').data('id');
 
         $.ajax({
             url: `/products/${id}`,
             type: 'DELETE',
             success: function () {
+                alert('Product deleted successfully!');
                 location.reload();
             }
         });
     });
 });
 </script>
-</body>
-</html>

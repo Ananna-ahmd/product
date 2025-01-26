@@ -16,6 +16,9 @@ return new class extends Migration
             $table->string('name');
             $table->text('description')->nullable();
             $table->decimal('price');
+            $table->boolean('featured')->default(false); 
+            $table->enum('availability', ['in_stock', 'out_of_stock'])->default('in_stock'); 
+            $table->string('image')->nullable(); 
             $table->timestamps();
         });
     }

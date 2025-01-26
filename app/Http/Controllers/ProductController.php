@@ -25,6 +25,11 @@ class ProductController extends Controller
         // $product->description = $request->description;
         // $product->save();
 
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('products', 'public');
+            $product->update(['image' => $imagePath]);
+        }
+
         return response()->json(['message' => 'Product created successfully', 'product' => $product]);
     }
 

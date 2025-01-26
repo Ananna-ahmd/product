@@ -26,6 +26,9 @@ class UpdateProductRequest extends FormRequest
                 'name' => 'required',
                 'price' => 'required|numeric',
                 'description' => 'required|string',
+                'availability' => 'required|in:in_stock,out_of_stock',
+                'featured' => 'nullable|boolean',
+                 'image' => 'nullable|image|mimes:jpg,png,jpeg|max:2048',
             
         ];
     }
