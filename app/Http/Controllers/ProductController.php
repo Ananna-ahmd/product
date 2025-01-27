@@ -9,9 +9,26 @@ use App\Models\Product;
 
 class ProductController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $products = Product::latest()->get();
+        
+        $query = Product::latest();
+
+        if ($request->has('search') && $request->search != '') {
+            $query->where('name', 'like', '%' . $request->search . '%')
+                  ->orWhere('price', 'like', '%' . $request->search . '%');
+        }
+    
+        $products = $query->paginate(5); 
+    
+        if ($request->ajax()) {
+            return response()->json([
+                'products' => view('products.table', compact('products'))->render(),
+                'pagination' => (string) $products->links(),
+            ]);
+          //  return view('products.table', compact('products'))->render();
+        }
+    
         return view('products.index', compact('products'));
     }
 

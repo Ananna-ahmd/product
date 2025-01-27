@@ -45,45 +45,15 @@
         </div>
         <button type="submit" class="btn btn-primary">Save Product</button>
     </form>
-    
+    <div class="mb-3 d-flex">
+        <input type="text" id="search" class="form-control" placeholder="Search product...">
+        <button id="searchBtn" class="btn btn-primary ms-2">Search</button>
+    </div>
 
     <!-- Product Table -->
-    <table class="table mt-3">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Description</th>
-                <th>Price</th>
-                <th>Availability</th>
-                <th>Product Image</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody id="productTable">
-            @foreach($products as $product)
-                <tr data-id="{{ $product->id }}">
-                    <td>{{ $product->name }}</td>
-                    <td>{{ $product->description }}</td>
-                    <td>${{ $product->price }}</td>
-                    <td>${{ $product->availability }}</td>
-                    <td>
-                        
-                        @if($product->image)
-                            <img src="{{ asset('storage/' . $product->image) }}" width="100" height="100" alt="Product Image">
-                        @else
-                            No Image
-                        @endif
-                    </td>
-                    
-
-                    <td>
-                        <button class="btn btn-warning editProduct">Edit</button>
-                        <button class="btn btn-danger deleteProduct">Delete</button>
-                    </td>
-                </tr>
-            @endforeach
-        </tbody>
-    </table>
+    <div id="productTable">
+        @include('products.table', ['products' => $products])
+    </div>
 </div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -160,5 +130,39 @@ $(document).ready(function () {
             }
         });
     });
+
+    $(document).ready(function () {
+    function fetchProducts(page = 1) {
+        let search = $('#search').val();
+        
+        $.ajax({
+            url: "/products?page=" + page + "&search=" + search,
+            type: "GET",
+            success: function (response) {
+                $('#productTable').html(response.products);
+                $('.pagination').html(response.pagination);
+            }
+        });
+    }
+
+    // Search on button click
+    $('#searchBtn').click(function () {
+        fetchProducts();
+    });
+
+    // Search on enter key
+    $('#search').keyup(function (e) {
+        if (e.key === 'Enter') {
+            fetchProducts();
+        }
+    });
+
+    // Pagination Click
+    $(document).on('click', '.pagination a', function (e) {
+        e.preventDefault();
+        let page = $(this).attr('href').split('page=')[1];
+        fetchProducts(page);
+    });
+});
 });
 </script>
