@@ -24,7 +24,7 @@ class ProductController extends Controller
         if ($request->ajax()) {
             return response()->json([
                 'products' => view('products.table', compact('products'))->render(),
-                'pagination' => (string) $products->links(),
+                'pagination' => (string) $products->links('pagination::bootstrap-4'),
             ]);
           //  return view('products.table', compact('products'))->render();
         }
