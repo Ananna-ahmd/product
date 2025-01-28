@@ -12,13 +12,31 @@ class ProductController extends Controller
     public function index(Request $request)
     {
         
-        $query = Product::latest();
+        $query = Product::query();
+
+   // filtering 
+    
+   if ($request->filled('availability')) {
+    $query->where('availability', $request->availability);
+}
+
+
+    // search
 
         if ($request->has('search') && $request->search != '') {
             $query->where('name', 'like', '%' . $request->search . '%')
                   ->orWhere('price', 'like', '%' . $request->search . '%');
         }
-    
+
+    //sorting
+
+    if ($request->filled('sort_by') && $request->filled('sort_order')) {
+        $query->orderBy($request->sort_by, $request->sort_order);
+    } else {
+        $query->orderBy('name', 'asc'); // Default sorting
+    }
+
+    // paginate
         $products = $query->paginate(5); 
     
         if ($request->ajax()) {

@@ -9,7 +9,7 @@
 </head>
 <body>
 <div class="container mt-5">
-    <h2 class="text-center">Our Product</h2>
+    <h2 class="text-center">Laptop Shop</h2>
 
     <form id="productForm">
         <input type="hidden" id="product_id" name="product_id">
@@ -48,6 +48,29 @@
     <div class="mb-3 d-flex">
         <input type="text" id="search" class="form-control" placeholder="Search product...">
         <button id="searchBtn" class="btn btn-primary ms-2">Search</button>
+    </div>
+
+    <div class="mb-3 d-flex">
+        <!-- Filter Availability -->
+        <select id="availabilityFilter" class="form-control me-2">
+            <option value="">All</option>
+            <option value="in_stock">In Stock</option>
+            <option value="out_of_stock">Out of Stock</option>
+        </select>
+    
+        <!-- Sort By -->
+        <select id="sortBy" class="form-control me-2">
+            <option value="name">Sort by Name</option>
+            <option value="price">Sort by Price</option>
+        </select>
+    
+        <!-- Sort Order -->
+        <select id="sortOrder" class="form-control me-2">
+            <option value="asc">Ascending</option>
+            <option value="desc">Descending</option>
+        </select>
+    
+        <button id="filterBtn" class="btn btn-success">Apply</button>
     </div>
 
     <!-- Product Table -->
@@ -131,13 +154,26 @@ $(document).ready(function () {
         });
     });
 
+// search ,filtering, pagination , sorting
+
     $(document).ready(function () {
     function fetchProducts(page = 1) {
         let search = $('#search').val();
+        let availability = $('#availabilityFilter').val();
+        let sortBy = $('#sortBy').val();
+        let sortOrder = $('#sortOrder').val();
+
+        console.log("Fetching products with:", { availability, sortBy, sortOrder});
         
         $.ajax({
             url: "/products?page=" + page + "&search=" + search,
             type: "GET",
+            data: {
+                availability: availability,
+                sort_by: sortBy,
+                sort_order: sortOrder
+            },
+
             success: function (response) {
                 $('#productTable').html(response.products);
                 $('.pagination').html(response.pagination);
@@ -145,19 +181,23 @@ $(document).ready(function () {
         });
     }
 
-    // Search on button click
+    // Search 
     $('#searchBtn').click(function () {
         fetchProducts();
     });
 
-    // Search on enter key
+    // Search 
     $('#search').keyup(function (e) {
         if (e.key === 'Enter') {
             fetchProducts();
         }
     });
 
-    // Pagination Click
+    $('#filterBtn').click(function () {
+        fetchProducts();
+    });
+
+    // Pagination 
     $(document).on('click', '.pagination a', function (e) {
         e.preventDefault();
         let page = $(this).attr('href').split('page=')[1];
