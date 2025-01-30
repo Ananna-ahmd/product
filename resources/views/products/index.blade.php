@@ -9,7 +9,7 @@
 </head>
 <body>
 <div class="container mt-5">
-    <h2 class="text-center">Laptop Shop</h2>
+    <h2 class="text-center">Shop</h2>
 
     <form id="productForm">
         <input type="hidden" id="product_id" name="product_id">
@@ -37,6 +37,17 @@
             <input type="checkbox" id="featured" name="featured">
             <label for="featured">Mark as Featured</label>
         </div>
+
+        {{--  <div class="mb-3">
+            <label for="category">Category</label> 
+            <select id="category" name="category_id" class="form-control">
+                <option value="">Select Category</option>
+                @foreach($categories as $category)
+                    <option value="{{ $category->id }}">{{ $category->name }}</option>
+                @endforeach
+            </select>
+        </div> --}}
+        
     
        
         <div class="mb-3">
@@ -69,9 +80,19 @@
             <option value="asc">Ascending</option>
             <option value="desc">Descending</option>
         </select>
+
+
+            <select id="categoryFilter" class="form-control me-2">
+                <option value="">All Categories</option>
+                @foreach($categories as $category)
+                    <option value="{{ $category->id }}">{{ $category->name }}</option>
+                @endforeach
+            </select>
     
         <button id="filterBtn" class="btn btn-success">Apply</button>
+
     </div>
+   
 
     <!-- Product Table -->
     <div id="productTable">
@@ -162,6 +183,8 @@ $(document).ready(function () {
         let availability = $('#availabilityFilter').val();
         let sortBy = $('#sortBy').val();
         let sortOrder = $('#sortOrder').val();
+        let category = $('#categoryFilter').val();
+
 
         console.log("Fetching products with:", { availability, sortBy, sortOrder});
         
@@ -201,7 +224,9 @@ $(document).ready(function () {
     $(document).on('click', '.pagination a', function (e) {
         e.preventDefault();
         let page = $(this).attr('href').split('page=')[1];
-        fetchProducts(page);
+        console.log(page);
+        
+        //fetchProducts(page);
     });
 });
 });

@@ -6,6 +6,7 @@ use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
 use Illuminate\Http\Request;
 use App\Models\Product;
+use App\Models\Category;
 
 class ProductController extends Controller
 {
@@ -13,6 +14,12 @@ class ProductController extends Controller
     {
         
         $query = Product::query();
+
+        // category 
+
+    if ($request->filled('category_id')) {
+        $query->where('category_id', $request->category_id);
+    }
 
    // filtering 
     
@@ -37,7 +44,8 @@ class ProductController extends Controller
     }
 
     // paginate
-        $products = $query->paginate(5); 
+        $products = $query->with('category')->paginate(5); 
+        $categories = Category::all();
     
         if ($request->ajax()) {
             return response()->json([
@@ -47,7 +55,7 @@ class ProductController extends Controller
           //  return view('products.table', compact('products'))->render();
         }
     
-        return view('products.index', compact('products'));
+        return view('products.index', compact('products', 'categories'));
     }
 
     public function store(StoreProductRequest $request)

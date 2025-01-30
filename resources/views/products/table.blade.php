@@ -5,6 +5,7 @@
             <th>Description</th>
             <th>Price</th>
             <th>Availability</th>
+            <th>Category</th>
             <th>Product Image</th>
             <th>Actions</th>
         </tr>
@@ -16,6 +17,7 @@
                 <td>{{ $product->description }}</td>
                 <td>{{ $product->price }}</td>
                 <td>{{ $product->availability }}</td>
+                <td>{{ $product->category->name ?? 'No Category' }}</td>
                 <td>
                     
                     @if($product->image)
