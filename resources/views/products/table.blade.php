@@ -10,9 +10,9 @@
             <th>Actions</th>
         </tr>
     </thead>
-    <tbody id="productTable">
+    <tbody id="productTable" class="productClass">
         @foreach($products as $product)
-            <tr data-id="{{ $product->id }}">
+           <tr data-id="{{ $product->id }}">
                 <td>{{ $product->name }}</td>
                 <td>{{ $product->description }}</td>
                 <td>{{ $product->price }}</td>
@@ -21,16 +21,17 @@
                 <td>
                     
                     @if($product->image)
-                        <img src="{{ asset('storage/' . $product->image) }}" width="100" height="100" alt="Product Image">
-                    @else
-                        No Image
-                    @endif
+                    <img src="{{ asset('storage/products/' . $product->image) }}" width="100" height="100" alt="Product Image">
+                @else
+                    No Image
+                @endif
+                
                 </td>
                 
 
                 <td>
-                    <button class="btn btn-warning editProduct">Edit</button>
-                    <button class="btn btn-danger deleteProduct">Delete</button>
+                    <button class="btn btn-warning editProduct" data-id="{{ $product->id }}">Edit</button>
+                    <button class="btn btn-danger deleteProduct" data-id="{{ $product->id }}">Delete</button>
                 </td>
             </tr>
         @endforeach

@@ -28,6 +28,7 @@ class StoreProductRequest extends FormRequest
             'availability' => 'required|in:in_stock,out_of_stock',
            'featured' => 'nullable|boolean',
            'image' => 'nullable|image|mimes:jpg,png,jpeg|max:2048',
+           'category_id'=>'nullable' ,
         ];
 
        
